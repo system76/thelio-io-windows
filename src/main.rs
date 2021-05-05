@@ -1,6 +1,5 @@
 use std::{
     env::current_exe,
-    fs,
     io::{
         BufRead,
         BufReader,
@@ -71,15 +70,7 @@ fn main() {
 
     let bin_path = current_exe().unwrap();
     let bin_dir = bin_path.parent().unwrap();
-
-    let ohml_bytes = include_bytes!("../OpenHardwareMonitor/OpenHardwareMonitorLib.dll");
-    let ohml_path = bin_dir.join("OpenHardwareMonitorLib.dll");
-    fs::write(&ohml_path, &ohml_bytes).unwrap();
-
-    let wrapper_bytes = include_bytes!("../wrapper/bin/Release/net48/wrapper.exe");
     let wrapper_path = bin_dir.join("thelio-io_wrapper.exe");
-    fs::write(&wrapper_path, &wrapper_bytes).unwrap();
-
     let mut wrapper = Command::new(&wrapper_path)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())

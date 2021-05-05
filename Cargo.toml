@@ -1,11 +1,15 @@
 [package]
 name = "thelio-io"
 version = "0.1.0"
-authors = ["Jeremy Soller <jackpot51@gmail.com>"]
+authors = ["Jeremy Soller <jeremy@system76.com>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "System76 Thelio Io Windows Driver"
+license = "GPL-3.0"
+repository = "https://github.com/system76/thelio-io-windows"
 
 [dependencies]
 serialport = "4.0"
 smbios-lib = "0.7.3"
+
+[build-dependencies]
+winres = "0.1"
