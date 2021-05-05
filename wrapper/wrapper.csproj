@@ -1,6 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Company>System76</Company>
+    <Product>Thelio Io Wrapper</Product>
+    <Copyright>GPL-3.0</Copyright>
+    <AssemblyTitle>System76 Thelio Io Wrapper</AssemblyTitle>
     <OutputType>Exe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <ApplicationManifest>..\app.manifest</ApplicationManifest>
