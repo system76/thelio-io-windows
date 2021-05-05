@@ -11,3 +11,7 @@ jobs:
             - run: choco install dotnet netfx-4.8 wixtoolset
             - run: cargo install cargo-wix
             - run: cargo wix -v --nocapture
+            - uses: actions/upload-artifact@v2
+              with:
+                  name: thelio-io.msi
+                  path: target/wix/thelio-io-*.msi
