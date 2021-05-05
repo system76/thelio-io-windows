@@ -11,4 +11,7 @@ fn main() {
     if ! status.success() {
         panic!("failed to build wrapper: {}", status);
     }
+    println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-changed=wrapper/Program.cs");
+    println!("cargo:rerun-if-changed=wrapper/wrapper.csproj");
 }

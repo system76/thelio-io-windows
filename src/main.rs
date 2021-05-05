@@ -1,4 +1,5 @@
 use std::{
+    env::current_exe,
     io::{
         BufRead,
         BufReader,
@@ -12,7 +13,10 @@ use std::{
     time::Duration,
 };
 
-use thelio_io::Io;
+use thelio_io::{
+    fan::FanCurve,
+    Io,
+};
 
 fn main() {
     let smbios = smbioslib::table_load_from_device().unwrap();
@@ -25,10 +29,13 @@ fn main() {
         |sys: smbioslib::SMBiosSystemInformation| sys.version()
     ).unwrap();
 
-    match (sys_vendor.as_str(), product_version.as_str()) {
-        ("System76", "thelio-mira-r1") => println!("System76 Thelio Mira (thelio-mira-r1)"),
+    let curve = match (sys_vendor.as_str(), product_version.as_str()) {
+        ("System76", "thelio-mira-r1") => {
+            println!("System76 Thelio Mira (thelio-mira-r1)");
+            FanCurve::standard()
+        },
         _ => panic!("unsupported sys_vendor '{}' and product_version '{}'", sys_vendor, product_version),
-    }
+    };
 
     let mut ios = Vec::new();
     for port_info in serialport::available_ports().unwrap() {
@@ -61,7 +68,11 @@ fn main() {
         panic!("failed to find any Thelio Io devices");
     }
 
-    let mut wrapper = Command::new("wrapper/bin/Release/net48/wrapper.exe")
+    let bin_path = current_exe().unwrap();
+    let bin_dir = bin_path.parent().unwrap();
+    let wrapper_path = bin_dir.join("../../wrapper/bin/Release/net48/wrapper.exe");
+    println!("{}", wrapper_path.display());
+    let mut wrapper = Command::new(wrapper_path)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -74,19 +85,22 @@ fn main() {
         wrapper_in.write_all(b"\n").unwrap();
         let mut line = String::new();
         wrapper_out.read_line(&mut line).unwrap();
+
         let temp = line.trim().parse::<f64>().unwrap();
+        print!("temp: {:02} C", temp as isize);
 
-        println!("temp: {}", temp);
+        if let Some(duty) = curve.get_duty((temp * 100.0) as i16) {
+            print!(" duty: {:02}%", (duty as f64 / 100.0) as isize);
 
-        for io in ios.iter_mut() {
-            for device in &["CPUF", "INTF", "POWB"] {
-                println!("device: {}", device);
-                println!("  tach: {:?}", io.tach(device));
-                println!("  duty: {:?}", io.duty(device));
-                println!("  set_duty: {:?}", io.set_duty(device, 0));
-                println!("  duty: {:?}", io.duty(device));
+            for io in ios.iter_mut() {
+                for device in &["CPUF", "INTF"] {
+                    io.set_duty(device, duty).unwrap();
+                    print!(" {}: {} RPM", device, io.tach(device).unwrap());
+                }
             }
         }
+
+        println!();
 
         sleep(Duration::new(1, 0));
     }

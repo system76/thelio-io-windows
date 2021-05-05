@@ -4,6 +4,8 @@ use std::{
     time::Duration,
 };
 
+pub mod fan;
+
 pub struct Io {
     port: Box<dyn serialport::SerialPort>,
     timeout: u32,
