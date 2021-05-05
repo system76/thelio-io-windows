@@ -6,7 +6,6 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - uses: actions-rs/toolchain@v1
-            - run: |
-                choco install wixtoolset
-                cargo install cargo-wix
-                cargo wix -v --nocapture
+            - run: choco install netfx-4.8 wixtoolset
+            - run: cargo install cargo-wix
+            - run: cargo wix -v --nocapture
