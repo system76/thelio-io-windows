@@ -5,7 +5,9 @@ jobs:
         runs-on: windows-latest
         steps:
             - uses: actions/checkout@v2
+              with:
+                  lfs: true
             - uses: actions-rs/toolchain@v1
-            - run: choco install netfx-4.8 wixtoolset
+            - run: choco install dotnet netfx-4.8 wixtoolset
             - run: cargo install cargo-wix
             - run: cargo wix -v --nocapture
