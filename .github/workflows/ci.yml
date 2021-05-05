@@ -13,5 +13,5 @@ jobs:
             - run: cargo wix -v --nocapture
             - uses: actions/upload-artifact@v2
               with:
-                  name: thelio-io.msi
+                  name: thelio-io
                   path: target/wix/thelio-io-*.msi
