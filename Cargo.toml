@@ -3,7 +3,7 @@ name = "thelio-io"
 version = "0.1.0"
 authors = ["Jeremy Soller <jeremy@system76.com>"]
 edition = "2018"
-description = "System76 Thelio Io Windows Driver"
+description = "System76 Thelio Io"
 license = "GPL-3.0"
 repository = "https://github.com/system76/thelio-io-windows"
 
