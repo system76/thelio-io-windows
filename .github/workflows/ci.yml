@@ -1,0 +1,12 @@
+name: CI
+on: [push, pull_request]
+jobs:
+    build:
+        runs-on: windows-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions-rs/toolchain@v1
+            - run:
+                choco install wixtoolset
+                cargo install cargo-wix
+                cargo wix -v --nocapture
