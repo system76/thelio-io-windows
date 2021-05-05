@@ -77,7 +77,7 @@ fn main() {
     fs::write(&ohml_path, &ohml_bytes).unwrap();
 
     let wrapper_bytes = include_bytes!("../wrapper/bin/Release/net48/wrapper.exe");
-    let wrapper_path = bin_dir.join("wrapper.exe");
+    let wrapper_path = bin_dir.join("thelio-io_wrapper.exe");
     fs::write(&wrapper_path, &wrapper_bytes).unwrap();
 
     let mut wrapper = Command::new(&wrapper_path)
