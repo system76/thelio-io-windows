@@ -58,6 +58,8 @@
         <Property Id='DiskPrompt' Value='System76 Thelio Io Installation'/>
 
         <Directory Id='TARGETDIR' Name='SourceDir'>
+            <Merge Id="VCRedist" SourceFile="msvc\Microsoft_VC142_CRT_x64.msm" DiskId="1" Language="0"/>
+
             <Directory Id='$(var.PlatformProgramFilesFolder)' Name='PFiles'>
                 <Directory Id='APPLICATIONFOLDER' Name='System76 Thelio Io'>
                     <!--
@@ -120,6 +122,10 @@
                 </Directory>
             </Directory>
         </Directory>
+
+        <Feature Id="VCRedist" Title="Visual C++ 2019 Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+            <MergeRef Id="VCRedist"/>
+        </Feature>
 
         <Feature
             Id='Binaries'
