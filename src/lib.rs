@@ -18,16 +18,24 @@ impl Io {
 
     pub fn command(&mut self, command: &str) -> Result<Vec<String>, String> {
         // println!("> {}", command);
-        self.port.write(format!("{}\r", command).as_bytes()).unwrap();
+        self.port.write(format!("{}\r", command).as_bytes()).map_err(|err| {
+            format!("Io command '{}' failed to write: {}", command, err)
+        })?;
 
         let mut responses = Vec::new();
         let mut buf = [0; 4096];
         for _ in 0..self.timeout {
-            let to_read = self.port.bytes_to_read().unwrap();
+            let to_read = self.port.bytes_to_read().map_err(|err| {
+                format!("Io command '{}' failed to get bytes to read: {}", command, err)
+            })?;
             if to_read > 0 {
-                let count = self.port.read(&mut buf[..to_read as usize]).unwrap();
+                let count = self.port.read(&mut buf[..to_read as usize]).map_err(|err| {
+                    format!("Io command '{}' failed to read: {}", command, err)
+                })?;
                 if count > 0 {
-                    let string = str::from_utf8(&buf[..count]).unwrap();
+                    let string = str::from_utf8(&buf[..count]).map_err(|err| {
+                        format!("Io command '{}' failed to parse response: {}", command, err)
+                    })?;
 
                     for line in string.lines() {
                         // println!("< {}", line);
