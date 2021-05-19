@@ -86,12 +86,21 @@
                                 DiskId='1'
                                 Source='target\$(var.Profile)\thelio-io.exe'
                                 KeyPath='yes'/>
-                            <RegistryValue
-                                Root='HKLM'
-                                Key='Software\Microsoft\Windows\CurrentVersion\Run'
-                                Name='System76 Thelio Io'
-                                Value='[#exe0]'
-                                Type='string'/>
+                            <ServiceInstall
+                                Id="ServiceInstaller"
+                                Name="thelio-io"
+                                DisplayName="System76 Thelio Io"
+                                Type="ownProcess"
+                                Account="LocalSystem"
+                                Start="auto"
+                                ErrorControl="normal"/>
+                            <ServiceControl
+                                Id="ServiceControl"
+                                Name="thelio-io"
+                                Start="install"
+                                Stop="both"
+                                Remove="uninstall"
+                                Wait="yes"/>
                             <util:EventSource
                                 Log="Application"
                                 Name="System76 Thelio Io"

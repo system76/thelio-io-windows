@@ -4,6 +4,7 @@ use log::{
 };
 use std::{
     env::current_exe,
+    ffi::OsString,
     io::{
         self,
         BufRead,
@@ -19,10 +20,25 @@ use std::{
     thread::sleep,
     time::Duration,
 };
-
 use thelio_io::{
     fan::FanCurve,
     Io,
+};
+use windows_service::{
+    define_windows_service,
+    service::{
+        ServiceControl,
+        ServiceControlAccept,
+        ServiceExitCode,
+        ServiceState,
+        ServiceStatus,
+        ServiceType,
+    },
+    service_dispatcher,
+    service_control_handler::{
+        self,
+        ServiceControlHandlerResult,
+    },
 };
 
 fn driver_loop(curve: &FanCurve, ios: &mut [Io], wrapper: &mut Child) -> io::Result<()> {
@@ -129,12 +145,42 @@ fn driver() -> io::Result<()> {
     res
 }
 
-fn main() {
+fn service_main(_args: Vec<OsString>) {
+    // Windows event log
     winlog::init("System76 Thelio Io").expect("failed to initialize logging");
 
+    // Handle service events
+    let status_handle = service_control_handler::register("thelio-io", |event| -> ServiceControlHandlerResult {
+        //TODO: handle stop event
+        match event {
+            ServiceControl::Interrogate => ServiceControlHandlerResult::NoError,
+            _ => ServiceControlHandlerResult::NotImplemented,
+        }
+    }).expect("failed to register for service events");
+
+    // Update service status
+    status_handle.set_service_status(ServiceStatus {
+        service_type: ServiceType::OWN_PROCESS,
+        current_state: ServiceState::Running,
+        controls_accepted: ServiceControlAccept::empty(),
+        exit_code: ServiceExitCode::Win32(0),
+        checkpoint: 0,
+        wait_hint: Duration::default(),
+        process_id: None,
+    }).expect("failed to set service status");
+
+    // Run driver
     if let Err(err) = driver() {
         error!("{}\n{:#?}", err, err);
-        eprintln!("Error: {}\n{:#?}", err, err);
+        //TODO: set service status
         exit(1);
     }
+}
+
+define_windows_service!(ffi_service_main, service_main);
+
+fn main() -> Result<(), windows_service::Error> {
+    // Dispatch service
+    service_dispatcher::start("thelio-io", ffi_service_main)?;
+    Ok(())
 }
