@@ -29,7 +29,8 @@
   <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
 <?endif ?>
 
-<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
+    xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
     <Product
         Id='61D03E35-CFC2-4E3C-A020-F632D76342C7'
         Name='System76 Thelio Io'
@@ -78,16 +79,6 @@
                     </Component>
 
                     <Directory Id='Bin' Name='bin'>
-                        <Component Id='Path' Guid='11AE7DB9-6C6E-4531-B4F5-E6CBCA4FC801' Win64='$(var.Win64)' KeyPath='yes'>
-                            <Environment
-                                Id='PATH'
-                                Name='PATH'
-                                Value='[Bin]'
-                                Permanent='no'
-                                Part='last'
-                                Action='set'
-                                System='yes'/>
-                        </Component>
                         <Component Id='binary0' Guid='*' Win64='$(var.Win64)'>
                             <File
                                 Id='exe0'
@@ -101,6 +92,10 @@
                                 Name='System76 Thelio Io'
                                 Value='[#exe0]'
                                 Type='string'/>
+                            <util:EventSource
+                                Log="Application"
+                                Name="System76 Thelio Io"
+                                EventMessageFile="[#exe0]"/>
                         </Component>
                         <Component Id='binary1' Guid='*' Win64='$(var.Win64)'>
                             <File
@@ -147,15 +142,6 @@
             <ComponentRef Id='binary1'/>
 
             <ComponentRef Id='binary2'/>
-
-            <Feature
-                Id='Environment'
-                Title='PATH Environment Variable'
-                Description='Add the install location of the [ProductName] executable to the PATH system environment variable. This allows the [ProductName] executable to be called from any location.'
-                Level='1'
-                Absent='allow'>
-                <ComponentRef Id='Path'/>
-            </Feature>
         </Feature>
 
         <SetProperty Id='ARPINSTALLLOCATION' Value='[APPLICATIONFOLDER]' After='CostFinalize'/>

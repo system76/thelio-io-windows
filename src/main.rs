@@ -1,3 +1,7 @@
+use log::{
+    debug,
+    error,
+};
 use std::{
     env::current_exe,
     io::{
@@ -36,11 +40,8 @@ fn driver_loop(curve: &FanCurve, ios: &mut [Io], wrapper: &mut Child) -> io::Res
                 err
             )
         })?;
-        eprint!("temp: {:02} C", temp as isize);
 
         if let Some(duty) = curve.get_duty((temp * 100.0) as i16) {
-            eprint!(" duty: {:02}%", (duty as f64 / 100.0) as isize);
-
             for io in ios.iter_mut() {
                 for device in &["CPUF", "INTF"] {
                     io.set_duty(device, duty).map_err(|err| {
@@ -49,17 +50,9 @@ fn driver_loop(curve: &FanCurve, ios: &mut [Io], wrapper: &mut Child) -> io::Res
                             err
                         )
                     })?;
-                    eprint!(" {}: {} RPM", device, io.tach(device).map_err(|err| {
-                        io::Error::new(
-                            io::ErrorKind::Other,
-                            err
-                        )
-                    })?);
                 }
             }
         }
-
-        eprintln!();
 
         sleep(Duration::new(1, 0));
     }
@@ -78,7 +71,7 @@ fn driver() -> io::Result<()> {
 
     let curve = match (sys_vendor.as_str(), product_version.as_str()) {
         ("System76", "thelio-mira-r1") => {
-            eprintln!("System76 Thelio Mira (thelio-mira-r1)");
+            debug!("{} {} uses standard fan curve", sys_vendor, product_version);
             FanCurve::standard()
         },
         _ => return Err(io::Error::new(
@@ -96,18 +89,17 @@ fn driver() -> io::Result<()> {
         match port_info.port_type {
             serialport::SerialPortType::UsbPort(usb_info) => {
                 if usb_info.vid == 0x1209 && usb_info.pid == 0x1776 {
-                    eprintln!("Thelio Io at {}", port_info.port_name);
+                    debug!("Thelio Io at {}", port_info.port_name);
 
                     let port = serialport::new(port_info.port_name, 115200)
                         .timeout(Duration::from_millis(1))
                         .open()?;
 
                     let mut io = Io::new(port, 1000);
-
-                    eprintln!("  reset: {:?}", io.reset());
-                    eprintln!("  revision: {:?}", io.revision());
-                    eprintln!("  suspend: {:?}", io.suspend());
-
+                    io.reset().map_err(|err| io::Error::new(
+                        io::ErrorKind::Other,
+                        err
+                    ))?;
                     ios.push(io);
                 }
             },
@@ -138,10 +130,11 @@ fn driver() -> io::Result<()> {
 }
 
 fn main() {
+    winlog::init("System76 Thelio Io").expect("failed to initialize logging");
+
     if let Err(err) = driver() {
-        eprintln!("Error: {}\n{:#?}\nPress any key to exit", err, err);
-        let mut line = String::new();
-        io::stdin().read_line(&mut line).unwrap();
+        error!("{}\n{:#?}", err, err);
+        eprintln!("Error: {}\n{:#?}", err, err);
         exit(1);
     }
 }
