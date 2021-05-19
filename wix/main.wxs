@@ -32,7 +32,7 @@
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'
     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
     <Product
-        Id='61D03E35-CFC2-4E3C-A020-F632D76342C7'
+        Id='*'
         Name='System76 Thelio Io'
         UpgradeCode='69D3AF2E-8CD5-4E0D-BA40-1FEA0A7C6546'
         Manufacturer='System76'
@@ -53,6 +53,7 @@
 
         <MajorUpgrade
             Schedule='afterInstallInitialize'
+            AllowSameVersionUpgrades='yes'
             DowngradeErrorMessage='A newer version of [ProductName] is already installed. Setup will now exit.'/>
 
         <Media Id='1' Cabinet='media1.cab' EmbedCab='yes' DiskPrompt='CD-ROM #1'/>
