@@ -51,6 +51,7 @@ if args.sign:
         "-username=" + os.environ["SSL_COM_USERNAME"],
         "-password=" + os.environ["SSL_COM_PASSWORD"],
         "-totp_secret=" + os.environ["SSL_COM_TOTP_SECRET"],
+        "-program_name=System76 Thelio Io",
         "-input_file_path=../../../wix/thelio-io-0.1.0-x86_64.msi",
         "-output_dir_path=../../",
-    ], cwd="target/sign/CodeSignTool/CodeSignTool-v1.0-windows")
+    ], cwd="target/sign/CodeSignTool/CodeSignTool-v1.1.0-windows")
