@@ -26,4 +26,4 @@ jobs:
             - uses: actions/upload-artifact@v2
               with:
                   name: thelio-io
-                  path: target/wix/thelio-io-*.msi
+                  path: ${{ github.event_name == 'release' && 'target/sign/thelio-io-*.msi' || 'target/wix/thelio-io-*.msi' }}
