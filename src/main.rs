@@ -90,6 +90,19 @@ fn driver() -> io::Result<()> {
             debug!("{} {} uses standard fan curve", sys_vendor, product_version);
             FanCurve::standard()
         },
+        ("System76", "thelio-major-r1") => {
+            debug!("{} {} uses threadripper2 fan curve", sys_vendor, product_version);
+            FanCurve::threadripper2()
+        },
+        ("System76", "thelio-major-r2" | "thelio-major-r2.1" | "thelio-major-b1" | "thelio-major-b2"
+                   | "thelio-major-b3" | "thelio-mega-r1" | "thelio-mega-r1.1" ) => {
+            debug!("{} {} uses hedt fan curve", sys_vendor, product_version);
+            FanCurve::hedt()
+        },
+        ("System76", "thelio-massive-b1") => {
+            debug!("{} {} uses xeon fan curve", sys_vendor, product_version);
+            FanCurve::xeon()
+        },
         _ => return Err(io::Error::new(
             io::ErrorKind::Other,
             format!(
