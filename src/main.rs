@@ -86,14 +86,14 @@ fn driver() -> io::Result<()> {
     ).unwrap_or(String::new());
 
     let curve = match (sys_vendor.as_str(), product_version.as_str()) {
-        ("System76", "thelio-mira-r1") => {
+        ("System76", "thelio-r1") => {
             debug!("{} {} uses standard fan curve", sys_vendor, product_version);
             FanCurve::standard()
         },
         _ => return Err(io::Error::new(
             io::ErrorKind::Other,
             format!(
-                "unsupported sys_vendor '{}' and product_version '{}'",
+                "[ERROR] unsupported sys_vendor '{}' and product_version '{}'",
                 sys_vendor,
                 product_version
             )
