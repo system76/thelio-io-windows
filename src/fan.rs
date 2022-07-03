@@ -3,9 +3,9 @@
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct FanPoint {
-    // Temperature in hundredths of a degree, 10000 = 100C
+    // Temperature in hundredths of a degree, 100_00 = 100C
     temp: i16,
-    // duty in hundredths of a percent, 10000 = 100%
+    // duty in hundredths of a percent, 100_00 = 100%
     duty: u16,
 }
 
@@ -54,6 +54,7 @@ pub struct FanCurve {
 
 impl FanCurve {
     /// Adds a point to the fan curve
+    #[must_use]
     pub fn append(mut self, temp: i16, duty: u16) -> Self {
         self.points.push(FanPoint::new(temp, duty));
         self
@@ -122,9 +123,9 @@ impl FanCurve {
             }
         }
 
-        // Use when we upgrade to 1.28.0
-        // for &[prev, next] in self.points.windows(2) {
-
+        // When array_windows is no longer a nightly feature, use
+        // `for &[prev, next] in self.points.array_windows<2>`.
+        // https://github.com/rust-lang/rust/issues/75027
         for window in self.points.windows(2) {
             let prev = window[0];
             let next = window[1];
