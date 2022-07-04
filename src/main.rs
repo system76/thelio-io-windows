@@ -1,7 +1,3 @@
-use log::{
-    debug,
-    error,
-};
 use std::{
     env::current_exe,
     ffi::OsString,
@@ -86,21 +82,21 @@ fn driver() -> io::Result<()> {
     ).unwrap_or(String::new());
 
     let curve = match (sys_vendor.as_str(), product_version.as_str()) {
-        ("System76", "thelio-mira-r1") => {
-            debug!("{} {} uses standard fan curve", sys_vendor, product_version);
+        ("System76", "thelio-mira-r1" | "thelio-mira-r2") => {
+            log::debug!("{} {} uses standard fan curve", sys_vendor, product_version);
             FanCurve::standard()
         },
         ("System76", "thelio-major-r1") => {
-            debug!("{} {} uses threadripper2 fan curve", sys_vendor, product_version);
+            log::debug!("{} {} uses threadripper2 fan curve", sys_vendor, product_version);
             FanCurve::threadripper2()
         },
         ("System76", "thelio-major-r2" | "thelio-major-r2.1" | "thelio-major-b1" | "thelio-major-b2"
                    | "thelio-major-b3" | "thelio-mega-r1" | "thelio-mega-r1.1" ) => {
-            debug!("{} {} uses hedt fan curve", sys_vendor, product_version);
+            log::debug!("{} {} uses hedt fan curve", sys_vendor, product_version);
             FanCurve::hedt()
         },
         ("System76", "thelio-massive-b1") => {
-            debug!("{} {} uses xeon fan curve", sys_vendor, product_version);
+            log::debug!("{} {} uses xeon fan curve", sys_vendor, product_version);
             FanCurve::xeon()
         },
         _ => return Err(io::Error::new(
@@ -118,7 +114,7 @@ fn driver() -> io::Result<()> {
         match port_info.port_type {
             serialport::SerialPortType::UsbPort(usb_info) => {
                 if usb_info.vid == 0x1209 && usb_info.pid == 0x1776 {
-                    debug!("Thelio Io at {}", port_info.port_name);
+                    log::debug!("Thelio Io at {}", port_info.port_name);
 
                     let port = serialport::new(port_info.port_name, 115200)
                         .timeout(Duration::from_millis(1))
@@ -184,7 +180,7 @@ fn service_main(_args: Vec<OsString>) {
 
     // Run driver
     if let Err(err) = driver() {
-        error!("{}\n{:#?}", err, err);
+        log::error!("{}\n{:#?}", err, err);
         //TODO: set service status
         exit(1);
     }
