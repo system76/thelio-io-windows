@@ -5,7 +5,7 @@
 - Install Chocolaty from https://chocolatey.org/install
 - Launch an Administrator Command Prompt and run the following:
 ```
-choco install dotnet netfx-4.8 python3 wixtoolset
+choco install dotnet-6.0-sdk netfx-4.8 python3 wixtoolset
 ```
 - Launch a normal Command Prompt and run the following:
 ```
